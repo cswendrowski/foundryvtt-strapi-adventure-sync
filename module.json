@@ -22,9 +22,11 @@
     "requires": []
   },
   "esmodules": [
-    "scripts/module.js"
+    "scripts/module.js",
+    "scripts/CONST.mjs"
   ],
   "scripts": [
+    "scripts/libs/showdown.min.js"
   ],
   "styles": [
     "styles/module.css"
