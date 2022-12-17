@@ -1,39 +1,46 @@
 import {MODULE_ID} from "../CONST.mjs";
 
 export default class StrapiAPI {
-    async getAdventure(id) {
+
+    async _getData(path, id) {
         let baseUrl = game.settings.get(MODULE_ID, 'baseUrl');
         let bearer = game.settings.get(MODULE_ID, 'bearer');
-        const response = await fetch(`${baseUrl}/api/adventures/${id}?populate=%2A`, {
+        const response = await fetch(`${baseUrl}/api/${path}/${id}?populate=%2A`, {
             headers: {
                 Authorization: `Bearer ${bearer}`
             }
         });
-        const adventure = await response.json();
-        return adventure.data;
+        const data = await response.json();
+        return data.data;
+    }
+
+    async getImage(fileName, url) {
+        console.log("Downloading " + fileName);
+        let baseUrl = game.settings.get(MODULE_ID, 'baseUrl');
+        let bearer = game.settings.get(MODULE_ID, 'bearer');
+        let response = await fetch(baseUrl + url, {
+            headers: {
+                Authorization: `Bearer ${bearer}`
+            }
+        });
+        let blob = await response.blob();
+        let file = new File([blob], fileName);
+        return file;
+    }
+
+    async getAdventure(id) {
+        return await this._getData('adventures', id);
     }
 
     async getBattle(id) {
-        let baseUrl = game.settings.get(MODULE_ID, 'baseUrl');
-        let bearer = game.settings.get(MODULE_ID, 'bearer');
-        const response = await fetch(`${baseUrl}/api/battles/${id}?populate=%2A`, {
-            headers: {
-                Authorization: `Bearer ${bearer}`
-            }
-        });
-        const battle = await response.json();
-        return battle;
+        return await this._getData('battles', id);
     }
 
     async getJournal(id) {
-        let baseUrl = game.settings.get(MODULE_ID, 'baseUrl');
-        let bearer = game.settings.get(MODULE_ID, 'bearer');
-        const response = await fetch(`${baseUrl}/api/journals/${id}?populate=%2A`, {
-            headers: {
-                Authorization: `Bearer ${bearer}`
-            }
-        });
-        const journal = await response.json();
-        return journal.data;
+        return await this._getData('journals', id);
+    }
+
+    async getScene(id) {
+        return await this._getData('scenes', id);
     }
 }

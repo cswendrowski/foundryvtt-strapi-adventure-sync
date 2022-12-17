@@ -6,7 +6,6 @@ export default class StrapiSyncer {
 
     constructor() {
         this.api = new StrapiAPI();
-        this.converter = new StrapiConverter();
 
         this.syncAdventure(game.settings.get(MODULE_ID, "adventureId"));
 
@@ -19,6 +18,10 @@ export default class StrapiSyncer {
         console.log(`Syncing adventure ${id}`);
         let adventure = await this.api.getAdventure(id);
         console.dir(adventure);
+
+        const converter = new StrapiConverter(adventure);
+
+        // Journals
         let journals = [];
         for (let j of adventure.attributes.journals.data) {
             let journal = await this.api.getJournal(j.id);
@@ -27,7 +30,19 @@ export default class StrapiSyncer {
         console.dir(journals);
 
         for ( let j of journals ) {
-            await this.converter.createOrUpdateJournal(j);
+            await converter.createOrUpdateJournal(j);
+        }
+
+        // Scenes
+        let scenes = [];
+        for (let s of adventure.attributes.scenes.data) {
+            let scene = await this.api.getScene(s.id);
+            scenes.push(scene);
+        }
+        console.dir(scenes);
+
+        for ( let s of scenes ) {
+            await converter.createOrUpdateScene(s);
         }
     }
 }
